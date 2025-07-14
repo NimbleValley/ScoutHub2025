@@ -3,7 +3,6 @@ import { Stack, router } from "expo-router";
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Logo from '@/assets/images/icon.png';
 
 function CustomBackButton() {
   const navigation = useNavigation();
@@ -18,7 +17,7 @@ export default function RootLayout() {
   return <Stack
     screenOptions={{
       headerStyle: {
-        backgroundColor: '#ff8c00'
+        backgroundColor: '#ff8c00',
       },
       headerTintColor: '#fff',
       headerTitleStyle: {
@@ -28,7 +27,7 @@ export default function RootLayout() {
       contentStyle: {
         paddingHorizontal: 0,
         paddingTop: 0,
-        backgroundColor: '#FFF6EA'
+        backgroundColor: '#FFF6EA',
       }
     }}
   >
@@ -43,7 +42,6 @@ export default function RootLayout() {
       title: 'Match Scouting',
       animation: 'slide_from_right',
       headerLeft: () => <CustomBackButton />,
-      headerRight: () => 
     }} />
 
   </Stack>

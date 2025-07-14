@@ -1,11 +1,33 @@
 import AlgaeImage from '@/assets/images/algae.png';
 import ReefImage from '@/assets/images/reef.png';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import React from 'react';
 import { Animated, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const TeleScreen = () => {
+
+    React.useEffect(() => {
+        const firstLoad = async () => {
+            try {
+                await AsyncStorage.setItem('teleL4Count', 0);
+                await AsyncStorage.setItem('teleL3Count', 0);
+                await AsyncStorage.setItem('teleL2Count', 0);
+                await AsyncStorage.setItem('teleL1Count', 0);
+                await AsyncStorage.setItem('teleMissCoralCount', 0);
+                await AsyncStorage.setItem('teleNetCount', 0);
+                await AsyncStorage.setItem('teleMissNetCount', 0);
+                await AsyncStorage.setItem('teleProcessorCount', 0);
+                await AsyncStorage.setItem('park', false);
+                await AsyncStorage.setItem('selectedClimb', 'no');
+            } catch (err) {
+                alert('Storage error in tele section. Seek help.');
+            }
+        };
+
+        firstLoad();
+    }, []);
 
     const rotateAnim = React.useRef(new Animated.Value(0)).current;
     const [rotated, setRotated] = React.useState(false);
@@ -58,10 +80,19 @@ const TeleScreen = () => {
                                 <Text style={styles.reefOperationCount}>{teleL4Count}</Text>
                             </View>
                             <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={() => setTeleL4Count(teleL4Count + 1)}>
+                                <TouchableOpacity onPress={async () => {
+                                    await AsyncStorage.setItem('teleL4Count', teleL4Count + 1);
+                                    setTeleL4Count(teleL4Count + 1);
+                                }}>
                                     <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => { if (teleL4Count > 0) setTeleL4Count(teleL4Count - 1) }}>
+                                <TouchableOpacity onPress={async () => {
+                                    if (teleL4Count > 0) {
+                                        await AsyncStorage.setItem('teleL4Count', teleL4Count - 1);
+                                        setTeleL4Count(teleL4Count - 1)
+                                    }
+
+                                }}>
                                     <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
                                 </TouchableOpacity>
                             </View>
@@ -74,10 +105,19 @@ const TeleScreen = () => {
                                 <Text style={styles.reefOperationCount}>{teleL3Count}</Text>
                             </View>
                             <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={() => setTeleL3Count(teleL3Count + 1)}>
+                                <TouchableOpacity onPress={async () => {
+                                    await AsyncStorage.setItem('teleL3Count', teleL3Count + 1);
+                                    setTeleL3Count(teleL3Count + 1);
+                                }}>
                                     <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => { if (teleL3Count > 0) setTeleL3Count(teleL3Count - 1) }}>
+                                <TouchableOpacity onPress={async () => {
+                                    if (teleL3Count > 0) {
+                                        await AsyncStorage.setItem('teleL3Count', teleL3Count - 1);
+                                        setTeleL3Count(teleL3Count - 1)
+                                    }
+
+                                }}>
                                     <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
                                 </TouchableOpacity>
                             </View>
@@ -90,10 +130,19 @@ const TeleScreen = () => {
                                 <Text style={styles.reefOperationCount}>{teleL2Count}</Text>
                             </View>
                             <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={() => setTeleL2Count(teleL2Count + 1)}>
+                                <TouchableOpacity onPress={async () => {
+                                    await AsyncStorage.setItem('teleL2Count', teleL2Count + 1);
+                                    setTeleL2Count(teleL2Count + 1);
+                                }}>
                                     <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => { if (teleL2Count > 0) setTeleL2Count(teleL2Count - 1) }}>
+                                <TouchableOpacity onPress={async () => {
+                                    if (teleL2Count > 0) {
+                                        await AsyncStorage.setItem('teleL2Count', teleL2Count - 1);
+                                        setTeleL2Count(teleL2Count - 1)
+                                    }
+
+                                }}>
                                     <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
                                 </TouchableOpacity>
                             </View>
@@ -106,10 +155,19 @@ const TeleScreen = () => {
                                 <Text style={styles.reefOperationCount}>{teleL1Count}</Text>
                             </View>
                             <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={() => setTeleL1Count(teleL1Count + 1)}>
+                                <TouchableOpacity onPress={async () => {
+                                    await AsyncStorage.setItem('teleL1Count', teleL1Count + 1);
+                                    setTeleL1Count(teleL1Count + 1);
+                                }}>
                                     <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => { if (teleL1Count > 0) setTeleL1Count(teleL1Count - 1) }}>
+                                <TouchableOpacity onPress={async () => {
+                                    if (teleL1Count > 0) {
+                                        await AsyncStorage.setItem('teleL1Count', teleL1Count - 1);
+                                        setTeleL1Count(teleL1Count - 1)
+                                    }
+
+                                }}>
                                     <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
                                 </TouchableOpacity>
                             </View>
@@ -127,10 +185,19 @@ const TeleScreen = () => {
                         <Text style={styles.reefOperationCount}>{teleMissCoralCount}</Text>
                     </View>
                     <View style={styles.horizontalContainer}>
-                        <TouchableOpacity onPress={() => setteleMissCoralCount(teleMissCoralCount + 1)}>
+                        <TouchableOpacity onPress={async () => {
+                            await AsyncStorage.setItem('teleMissCoralCount', teleMissCoralCount + 1);
+                            setTeleMissCoralCount(teleMissCoralCount + 1);
+                        }}>
                             <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => { if (teleMissCoralCount > 0) setteleMissCoralCount(teleMissCoralCount - 1) }}>
+                        <TouchableOpacity onPress={async () => {
+                            if (teleMissCoralCount > 0) {
+                                await AsyncStorage.setItem('teleMissCoralCount', teleMissCoralCount - 1);
+                                setTeleMissCoralCount(teleMissCoralCount - 1)
+                            }
+
+                        }}>
                             <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
                         </TouchableOpacity>
                     </View>
@@ -146,10 +213,19 @@ const TeleScreen = () => {
                                 <Text style={styles.reefOperationCount}>{teleNetCount}</Text>
                             </View>
                             <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={() => setTeleNetCount(teleNetCount + 1)}>
+                                <TouchableOpacity onPress={async () => {
+                                    await AsyncStorage.setItem('teleNetCount', teleNetCount + 1);
+                                    setTeleNetCount(teleNetCount + 1);
+                                }}>
                                     <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => { if (teleNetCount > 0) setTeleNetCount(teleNetCount - 1) }}>
+                                <TouchableOpacity onPress={async () => {
+                                    if (teleNetCount > 0) {
+                                        await AsyncStorage.setItem('teleNetCount', teleNetCount - 1);
+                                        setTeleNetCount(teleNetCount - 1)
+                                    }
+
+                                }}>
                                     <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
                                 </TouchableOpacity>
                             </View>
@@ -162,10 +238,19 @@ const TeleScreen = () => {
                                 <Text style={styles.reefOperationCount}>{teleMissNetCount}</Text>
                             </View>
                             <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={() => setteleMissNetCount(teleMissNetCount + 1)}>
+                                <TouchableOpacity onPress={async () => {
+                                    await AsyncStorage.setItem('teleMissNetCount', teleMissNetCount + 1);
+                                    setTeleMissNetCount(teleMissNetCount + 1);
+                                }}>
                                     <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => { if (teleMissNetCount > 0) setteleMissNetCount(teleMissNetCount - 1) }}>
+                                <TouchableOpacity onPress={async () => {
+                                    if (teleMissNetCount > 0) {
+                                        await AsyncStorage.setItem('teleMissNetCount', teleMissNetCount - 1);
+                                        setTeleMissNetCount(teleMissNetCount - 1)
+                                    }
+
+                                }}>
                                     <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
                                 </TouchableOpacity>
                             </View>
@@ -179,10 +264,19 @@ const TeleScreen = () => {
                                 <Text style={styles.reefOperationCount}>{teleProcessorCount}</Text>
                             </View>
                             <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={() => setTeleProcessorCount(teleProcessorCount + 1)}>
+                                <TouchableOpacity onPress={async () => {
+                                    await AsyncStorage.setItem('teleProcessorCount', teleProcessorCount + 1);
+                                    setTeleProcessorCount(teleProcessorCount + 1);
+                                }}>
                                     <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => { if (teleProcessorCount > 0) setTeleProcessorCount(teleProcessorCount - 1) }}>
+                                <TouchableOpacity onPress={async () => {
+                                    if (teleProcessorCount > 0) {
+                                        await AsyncStorage.setItem('teleProcessorCount', teleProcessorCount - 1);
+                                        setTeleProcessorCount(teleProcessorCount - 1)
+                                    }
+
+                                }}>
                                     <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
                                 </TouchableOpacity>
                             </View>
@@ -201,18 +295,23 @@ const TeleScreen = () => {
                 <Text style={styles.endgameTitle}>Endgame:</Text>
 
 
-                <TouchableOpacity style={[styles.checkbox, selectedClimb == 'No' ? {display: 'flex'} : {display: 'none'}]} onPress={() => setPark(!park)}>
+                <TouchableOpacity style={[styles.checkbox, selectedClimb == 'No' ? { display: 'flex' } : { display: 'none' }]} onPress={async () => {
+                    await AsyncStorage.setItem('park', !park);
+                    setPark(!park);
+                }}>
                     <Text style={styles.checkboxText}>Parked:</Text>
                     <Ionicons name={park ? 'checkmark-circle-outline' : 'close-circle-outline'} size={54} color={park ? 'green' : 'red'} />
                 </TouchableOpacity>
 
-                <View style={[styles.horizontalContainer, {width: '90%', marginBottom: 25,}]}>
+                <View style={[styles.horizontalContainer, { width: '90%', marginBottom: 25, }]}>
                     <Text style={styles.label}>Climbed:</Text>
                     <Picker
                         style={styles.input}
                         selectedValue={selectedClimb}
-                        onValueChange={(itemValue, itemIndex) =>
-                            setSelectedClimb(itemValue)
+                        onValueChange={async (itemValue, itemIndex) => {
+                            await AsyncStorage.setItem('selectedClimb', itemValue);
+                            setSelectedClimb(itemValue);
+                        }
                         }>
                         <Picker.Item label="No" value="No" />
                         <Picker.Item label="Shallow ;)" value="Shallow" />

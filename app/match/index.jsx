@@ -1,8 +1,25 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import React from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 const GeneralScreen = () => {
+
+    React.useEffect(() => {
+        const firstLoad = async () => {
+            try {
+                await AsyncStorage.setItem('nameText', 'Mysterious Unknown Scouter');
+                await AsyncStorage.setItem('matchNumber', -1);
+                await AsyncStorage.setItem('teamNumber', -1);
+                await AsyncStorage.setItem('selectedStation', 'R1');
+            } catch (err) {
+                alert('Storage error in general section. Seek help.');
+            }
+        };
+
+        firstLoad();
+    }, []);
+
     const [nameText, onChangeNameText] = React.useState('');
     const [matchNumber, onChangeMatchNumber] = React.useState('');
     const [teamNumber, onChangeTeamNumber] = React.useState('');
@@ -15,7 +32,10 @@ const GeneralScreen = () => {
                 <Text style={styles.label}>Scout name:</Text>
                 <TextInput
                     style={styles.input}
-                    onChangeText={onChangeNameText}
+                    onChangeText={async (text) => {
+                        onChangeNameText(text);
+                        await AsyncStorage.setItem('nameText', text);
+                    }}
                     value={nameText}
                     placeholderTextColor='grey'
                     placeholder='ex. Hendrick'
@@ -26,7 +46,10 @@ const GeneralScreen = () => {
                 <Text style={styles.label}>Match #:</Text>
                 <TextInput
                     style={styles.input}
-                    onChangeText={onChangeMatchNumber}
+                    onChangeText={async (text) => {
+                        onChangeMatchNumber(text);
+                        await AsyncStorage.setItem('matchNumber', text);
+                    }}
                     value={matchNumber}
                     keyboardType="numeric"
                     placeholderTextColor='grey'
@@ -38,7 +61,10 @@ const GeneralScreen = () => {
                 <Text style={styles.label}>Team #:</Text>
                 <TextInput
                     style={styles.input}
-                    onChangeText={onChangeTeamNumber}
+                    onChangeText={async (text) => {
+                        onChangeTeamNumber(text);
+                        await AsyncStorage.setItem('teamNumber', text);
+                    }}
                     value={teamNumber}
                     keyboardType="numeric"
                     placeholderTextColor='grey'
@@ -51,9 +77,10 @@ const GeneralScreen = () => {
                 <Picker
                     style={styles.input}
                     selectedValue={selectedStation}
-                    onValueChange={(itemValue, itemIndex) =>
-                        setSelectedStation(itemValue)
-                    }>
+                    onValueChange={async (itemValue, itemIndex) => {
+                        await AsyncStorage.setItem('selectedStation', itemValue);
+                        setSelectedStation(itemValue);
+                    }}>
                     <Picker.Item label="B1" value="B1" />
                     <Picker.Item label="B2" value="B2" />
                     <Picker.Item label="B3" value="B3" />
