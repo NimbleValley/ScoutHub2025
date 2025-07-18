@@ -1,37 +1,18 @@
 import AlgaeImage from '@/assets/images/algae.png';
 import ReefImage from '@/assets/images/reef.png';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import React from 'react';
 import { Animated, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useForm } from '../form';
+import Checkbox from '../util/checkbox';
+import Counter from '../util/counter';
 
 const AutoScreen = () => {
 
-    React.useEffect(() => {
-        const firstLoad = async () => {
-            try {
-                await AsyncStorage.setItem('selectedStartPosition', 'Far');
-                await AsyncStorage.setItem('autoL4Count', 0);
-                await AsyncStorage.setItem('autoL3Count', 0);
-                await AsyncStorage.setItem('autoL2Count', 0);
-                await AsyncStorage.setItem('autoL1Count', 0);
-                await AsyncStorage.setItem('autoMissCoralCount', 0);
-                await AsyncStorage.setItem('autoNetCount', 0);
-                await AsyncStorage.setItem('autoMissNetCount', 0);
-                await AsyncStorage.setItem('autoProcessorCount', 0);
-                await AsyncStorage.setItem('leave', true);
-            } catch (err) {
-                alert('Storage error in auto section. Seek help.');
-            }
-        };
-    
-        firstLoad();
-    }, []);
+    const { state, dispatch } = useForm();
 
     const rotateAnim = React.useRef(new Animated.Value(0)).current;
     const [rotated, setRotated] = React.useState(false);
-    const [selectedStartPosition, setSelectedStartPosition] = React.useState('Far');
 
     const rotateInterpolate = rotateAnim.interpolate({
         inputRange: [0, 1],
@@ -52,18 +33,6 @@ const AutoScreen = () => {
         });
     };
 
-    const [autoL4Count, setAutoL4Count] = React.useState(0);
-    const [autoL3Count, setAutoL3Count] = React.useState(0);
-    const [autoL2Count, setAutoL2Count] = React.useState(0);
-    const [autoL1Count, setAutoL1Count] = React.useState(0);
-    const [autoMissCoralCount, setAutoMissCoralCount] = React.useState(0);
-
-    const [autoNetCount, setAutoNetCount] = React.useState(0);
-    const [autoMissNetCount, setAutoMissNetCount] = React.useState(0);
-    const [autoProcessorCount, setAutoProcessorCount] = React.useState(0);
-
-    const [leave, setLeave] = React.useState(true);
-
     return (
         <ScrollView style={styles.scrollView}>
             <View style={styles.pageContainer}>
@@ -73,11 +42,9 @@ const AutoScreen = () => {
                     <Text style={styles.label}>Starting position:</Text>
                     <Picker
                         style={styles.input}
-                        selectedValue={selectedStartPosition}
-                        onValueChange={async (itemValue, itemIndex) => {
-                            setSelectedStartPosition(itemValue);
-                            await AsyncStorage.setItem('selectedStartPosition', itemValue);
-                        }
+                        selectedValue={state.selectedStartPosition}
+                        onValueChange={(value) =>
+                            dispatch({ type: 'UPDATE_FIELD', field: 'selectedStartPosition', value })
                         }>
                         <Picker.Item label="Far" value="Far" />
                         <Picker.Item label="Center" value="Center" />
@@ -90,213 +57,35 @@ const AutoScreen = () => {
                     <View style={styles.reefOperationsContainer}>
 
                         {/* LEVEL FOUR */}
-                        <View style={styles.reefOperation}>
-                            <View style={styles.horizontalContainer}>
-                                <Text style={styles.reefOperationLabel}>L4:</Text>
-                                <Text style={styles.reefOperationCount}>{autoL4Count}</Text>
-                            </View>
-                            <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={async () => {
-                                    await AsyncStorage.setItem('autoL4Count', autoL4Count + 1);
-                                    setAutoL4Count(autoL4Count + 1);
-                                }}>
-                                    <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={async () => {
-                                    if (autoL4Count > 0) {
-                                        await AsyncStorage.setItem('autoL4Count', autoL4Count - 1);
-                                        setAutoL4Count(autoL4Count - 1)
-                                    }
-
-                                }}>
-                                    <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                        <Counter field="autoL4Count" label="L4:" type="coral-make"></Counter>
 
                         {/* LEVEL THREE */}
-                        <View style={styles.reefOperation}>
-                            <View style={styles.horizontalContainer}>
-                                <Text style={styles.reefOperationLabel}>L3:</Text>
-                                <Text style={styles.reefOperationCount}>{autoL3Count}</Text>
-                            </View>
-                            <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={async () => {
-                                    await AsyncStorage.setItem('autoL3Count', autoL3Count + 1);
-                                    setAutoL3Count(autoL3Count + 1);
-                                }}>
-                                    <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={async () => {
-                                    if (autoL3Count > 0) {
-                                        await AsyncStorage.setItem('autoL3Count', autoL3Count - 1);
-                                        setAutoL3Count(autoL3Count - 1)
-                                    }
-
-                                }}>
-                                    <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                        <Counter field="autoL3Count" label="L3:" type="coral-make"></Counter>
 
                         {/* LEVEL TWO */}
-                        <View style={styles.reefOperation}>
-                            <View style={styles.horizontalContainer}>
-                                <Text style={styles.reefOperationLabel}>L2:</Text>
-                                <Text style={styles.reefOperationCount}>{autoL2Count}</Text>
-                            </View>
-                            <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={async () => {
-                                    await AsyncStorage.setItem('autoL2Count', autoL2Count + 1);
-                                    setAutoL2Count(autoL2Count + 1);
-                                }}>
-                                    <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={async () => {
-                                    if (autoL2Count > 0) {
-                                        await AsyncStorage.setItem('autoL2Count', autoL2Count - 1);
-                                        setAutoL2Count(autoL2Count - 1)
-                                    }
-
-                                }}>
-                                    <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                        <Counter field="autoL2Count" label="L2:" type="coral-make"></Counter>
 
                         {/* LEVEL ONE */}
-                        <View style={styles.reefOperation}>
-                            <View style={styles.horizontalContainer}>
-                                <Text style={styles.reefOperationLabel}>L1:</Text>
-                                <Text style={styles.reefOperationCount}>{autoL1Count}</Text>
-                            </View>
-                            <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={async () => {
-                                    await AsyncStorage.setItem('autoL1Count', autoL1Count + 1);
-                                    setAutoL1Count(autoL1Count + 1);
-                                }}>
-                                    <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={async () => {
-                                    if (autoL1Count > 0) {
-                                        await AsyncStorage.setItem('autoL1Count', autoL1Count - 1);
-                                        setAutoL1Count(autoL1Count - 1)
-                                    }
+                        <Counter field="autoL1Count" label="L1:" type="coral-make"></Counter>
 
-                                }}>
-                                    <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-
-                        {/* ALGAE CONTAINER*/}
 
                     </View>
                 </View>
 
                 {/* MISS */}
-                <View style={styles.missContainer}>
-                    <View style={styles.horizontalContainer}>
-                        <Text style={styles.reefOperationLabel}>Missed coral:</Text>
-                        <Text style={styles.reefOperationCount}>{autoMissCoralCount}</Text>
-                    </View>
-                    <View style={styles.horizontalContainer}>
-                        <TouchableOpacity onPress={async () => {
-                            await AsyncStorage.setItem('autoMissCoralCount', autoMissCoralCount + 1);
-                            setAutoMissCoralCount(autoMissCoralCount + 1);
-                        }}>
-                            <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={async () => {
-                            if (autoMissCoralCount > 0) {
-                                await AsyncStorage.setItem('autoMissCoralCount', autoMissCoralCount - 1);
-                                setAutoMissCoralCount(autoMissCoralCount - 1)
-                            }
-
-                        }}>
-                            <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                <Counter field="autoMissCoralCount" label="Missed coral:" type="coral-miss"></Counter>
 
                 <View style={styles.algaeContainer}>
 
 
                     <View style={styles.netContainer}>
-                        <View style={styles.algaeOperation}>
-                            <View style={styles.horizontalContainer}>
-                                <Text style={styles.algaeOperationLabel}>Made net:</Text>
-                                <Text style={styles.reefOperationCount}>{autoNetCount}</Text>
-                            </View>
-                            <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={async () => {
-                                    await AsyncStorage.setItem('autoNetCount', autoNetCount + 1);
-                                    setAutoNetCount(autoNetCount + 1);
-                                }}>
-                                    <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={async () => {
-                                    if (autoNetCount > 0) {
-                                        await AsyncStorage.setItem('autoNetCount', autoNetCount - 1);
-                                        setAutoNetCount(autoNetCount - 1)
-                                    }
+                        <Counter field="autoNetCount" label="Made Net:" type="algae-make"></Counter>
 
-                                }}>
-                                    <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-
-
-                        <View style={[styles.algaeOperation, { backgroundColor: '#f5a9a9' }]}>
-                            <View style={styles.horizontalContainer}>
-                                <Text style={styles.algaeOperationLabel}>Missed net:</Text>
-                                <Text style={styles.reefOperationCount}>{autoMissNetCount}</Text>
-                            </View>
-                            <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={async () => {
-                                    await AsyncStorage.setItem('autoMissNetCount', autoMissNetCount + 1);
-                                    setAutoMissNetCount(autoMissNetCount + 1);
-                                }}>
-                                    <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={async () => {
-                                    if (autoMissNetCount > 0) {
-                                        await AsyncStorage.setItem('autoMissNetCount', autoMissNetCount - 1);
-                                        setAutoMissNetCount(autoMissNetCount - 1)
-                                    }
-
-                                }}>
-                                    <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                        <Counter field="autoMissNetCount" label="Missed Net:" type="algae-miss"></Counter>
                     </View>
 
                     <View style={styles.netContainer}>
-                        <View style={styles.algaeOperation}>
-                            <View style={styles.horizontalContainer}>
-                                <Text style={styles.algaeOperationLabel}>Processor:</Text>
-                                <Text style={styles.reefOperationCount}>{autoProcessorCount}</Text>
-                            </View>
-                            <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={async () => {
-                                    await AsyncStorage.setItem('autoProcessorCount', autoProcessorCount + 1);
-                                    setAutoProcessorCount(autoProcessorCount + 1);
-                                }}>
-                                    <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={async () => {
-                                    if (autoProcessorCount > 0) {
-                                        await AsyncStorage.setItem('autoProcessorCount', autoProcessorCount - 1);
-                                        setAutoProcessorCount(autoProcessorCount - 1)
-                                    }
-
-                                }}>
-                                    <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                    <Counter field="autoProcessorCount" label="Processor:" type="algae-make"></Counter>
 
 
                         <TouchableOpacity style={[styles.algaeOperation, { backgroundColor: 'transparent' }]} onPress={handleAlgaePress}>
@@ -309,13 +98,7 @@ const AutoScreen = () => {
                 </View>
 
 
-                <TouchableOpacity style={styles.checkbox} onPress={async () => {
-                    await AsyncStorage.setItem('leave', !leave);
-                    setLeave(!leave);
-                }}>
-                    <Text style={styles.checkboxText}>Ended off start line:</Text>
-                    <Ionicons name={leave ? 'checkmark-circle-outline' : 'close-circle-outline'} size={54} color={leave ? 'green' : 'red'} />
-                </TouchableOpacity>
+                <Checkbox field="leave" label="Ended off start line:"></Checkbox>
 
             </View>
         </ScrollView>
@@ -447,20 +230,6 @@ const styles = StyleSheet.create({
     algaeImage: {
         width: '100%',
         height: '100%',
-    },
-    checkbox: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginVertical: 25,
-        backgroundColor: '#e6d4c3',
-        padding: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-        gap: 10,
-    },
-    checkboxText: {
-        fontSize: 24
     },
 });
 

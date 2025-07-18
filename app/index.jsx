@@ -8,7 +8,7 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.pageContainer}>
-      <Text style={styles.titleText}>Welcome scouter!</Text>
+      <Text style={styles.titleText}>Welcome, scouter!</Text>
       <Image source={Logo} style={styles.logoStyle}></Image>
 
 
@@ -30,6 +30,8 @@ const HomeScreen = () => {
       >
         <Text style={styles.buttonText}>Analysis</Text>
       </TouchableOpacity>
+
+      <Text style={styles.footer}>Comp: Mukwonago, Ver: 1.0</Text>
     </View>
   );
 }
@@ -48,6 +50,8 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 35,
     margin: 25,
+    textAlign: 'center',
+    width: '100%',
   },
   matchButton: {
     backgroundColor: '#007bff',
@@ -80,6 +84,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 5,
   },
 });
 

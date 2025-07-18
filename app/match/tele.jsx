@@ -1,37 +1,18 @@
 import AlgaeImage from '@/assets/images/algae.png';
 import ReefImage from '@/assets/images/reef.png';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import React from 'react';
 import { Animated, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useForm } from '../form';
+import Checkbox from '../util/checkbox';
+import Counter from '../util/counter';
 
 const TeleScreen = () => {
 
-    React.useEffect(() => {
-        const firstLoad = async () => {
-            try {
-                await AsyncStorage.setItem('teleL4Count', 0);
-                await AsyncStorage.setItem('teleL3Count', 0);
-                await AsyncStorage.setItem('teleL2Count', 0);
-                await AsyncStorage.setItem('teleL1Count', 0);
-                await AsyncStorage.setItem('teleMissCoralCount', 0);
-                await AsyncStorage.setItem('teleNetCount', 0);
-                await AsyncStorage.setItem('teleMissNetCount', 0);
-                await AsyncStorage.setItem('teleProcessorCount', 0);
-                await AsyncStorage.setItem('park', false);
-                await AsyncStorage.setItem('selectedClimb', 'no');
-            } catch (err) {
-                alert('Storage error in tele section. Seek help.');
-            }
-        };
-
-        firstLoad();
-    }, []);
+    const { state, dispatch } = useForm();
 
     const rotateAnim = React.useRef(new Animated.Value(0)).current;
     const [rotated, setRotated] = React.useState(false);
-    const [selectedClimb, setSelectedClimb] = React.useState('No');
 
     const rotateInterpolate = rotateAnim.interpolate({
         inputRange: [0, 1],
@@ -52,235 +33,45 @@ const TeleScreen = () => {
         });
     };
 
-    const [teleL4Count, setTeleL4Count] = React.useState(0);
-    const [teleL3Count, setTeleL3Count] = React.useState(0);
-    const [teleL2Count, setTeleL2Count] = React.useState(0);
-    const [teleL1Count, setTeleL1Count] = React.useState(0);
-    const [teleMissCoralCount, setteleMissCoralCount] = React.useState(0);
-
-    const [teleNetCount, setTeleNetCount] = React.useState(0);
-    const [teleMissNetCount, setteleMissNetCount] = React.useState(0);
-    const [teleProcessorCount, setTeleProcessorCount] = React.useState(0);
-
-    const [park, setPark] = React.useState(false);
-
     return (
         <ScrollView style={styles.scrollView}>
             <View style={styles.pageContainer}>
-                <Text style={styles.title}>TELEOPERATOR MODE</Text>
+                <Text style={styles.title}>TELEOPERATED MODE</Text>
 
                 <View style={styles.reefContainer}>
                     <Image source={ReefImage} style={styles.reefImage}></Image>
                     <View style={styles.reefOperationsContainer}>
 
                         {/* LEVEL FOUR */}
-                        <View style={styles.reefOperation}>
-                            <View style={styles.horizontalContainer}>
-                                <Text style={styles.reefOperationLabel}>L4:</Text>
-                                <Text style={styles.reefOperationCount}>{teleL4Count}</Text>
-                            </View>
-                            <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={async () => {
-                                    await AsyncStorage.setItem('teleL4Count', teleL4Count + 1);
-                                    setTeleL4Count(teleL4Count + 1);
-                                }}>
-                                    <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={async () => {
-                                    if (teleL4Count > 0) {
-                                        await AsyncStorage.setItem('teleL4Count', teleL4Count - 1);
-                                        setTeleL4Count(teleL4Count - 1)
-                                    }
-
-                                }}>
-                                    <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                        <Counter field="teleL4Count" label="L4:" type="coral-make"></Counter>
 
                         {/* LEVEL THREE */}
-                        <View style={styles.reefOperation}>
-                            <View style={styles.horizontalContainer}>
-                                <Text style={styles.reefOperationLabel}>L3:</Text>
-                                <Text style={styles.reefOperationCount}>{teleL3Count}</Text>
-                            </View>
-                            <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={async () => {
-                                    await AsyncStorage.setItem('teleL3Count', teleL3Count + 1);
-                                    setTeleL3Count(teleL3Count + 1);
-                                }}>
-                                    <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={async () => {
-                                    if (teleL3Count > 0) {
-                                        await AsyncStorage.setItem('teleL3Count', teleL3Count - 1);
-                                        setTeleL3Count(teleL3Count - 1)
-                                    }
-
-                                }}>
-                                    <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                        <Counter field="teleL3Count" label="L3:" type="coral-make"></Counter>
 
                         {/* LEVEL TWO */}
-                        <View style={styles.reefOperation}>
-                            <View style={styles.horizontalContainer}>
-                                <Text style={styles.reefOperationLabel}>L2:</Text>
-                                <Text style={styles.reefOperationCount}>{teleL2Count}</Text>
-                            </View>
-                            <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={async () => {
-                                    await AsyncStorage.setItem('teleL2Count', teleL2Count + 1);
-                                    setTeleL2Count(teleL2Count + 1);
-                                }}>
-                                    <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={async () => {
-                                    if (teleL2Count > 0) {
-                                        await AsyncStorage.setItem('teleL2Count', teleL2Count - 1);
-                                        setTeleL2Count(teleL2Count - 1)
-                                    }
-
-                                }}>
-                                    <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                        <Counter field="teleL2Count" label="L2:" type="coral-make"></Counter>
 
                         {/* LEVEL ONE */}
-                        <View style={styles.reefOperation}>
-                            <View style={styles.horizontalContainer}>
-                                <Text style={styles.reefOperationLabel}>L1:</Text>
-                                <Text style={styles.reefOperationCount}>{teleL1Count}</Text>
-                            </View>
-                            <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={async () => {
-                                    await AsyncStorage.setItem('teleL1Count', teleL1Count + 1);
-                                    setTeleL1Count(teleL1Count + 1);
-                                }}>
-                                    <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={async () => {
-                                    if (teleL1Count > 0) {
-                                        await AsyncStorage.setItem('teleL1Count', teleL1Count - 1);
-                                        setTeleL1Count(teleL1Count - 1)
-                                    }
+                        <Counter field="teleL1Count" label="L1:" type="coral-make"></Counter>
 
-                                }}>
-                                    <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-
-                        {/* ALGAE CONTAINER*/}
 
                     </View>
                 </View>
 
                 {/* MISS */}
-                <View style={styles.missContainer}>
-                    <View style={styles.horizontalContainer}>
-                        <Text style={styles.reefOperationLabel}>Missed coral:</Text>
-                        <Text style={styles.reefOperationCount}>{teleMissCoralCount}</Text>
-                    </View>
-                    <View style={styles.horizontalContainer}>
-                        <TouchableOpacity onPress={async () => {
-                            await AsyncStorage.setItem('teleMissCoralCount', teleMissCoralCount + 1);
-                            setTeleMissCoralCount(teleMissCoralCount + 1);
-                        }}>
-                            <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={async () => {
-                            if (teleMissCoralCount > 0) {
-                                await AsyncStorage.setItem('teleMissCoralCount', teleMissCoralCount - 1);
-                                setTeleMissCoralCount(teleMissCoralCount - 1)
-                            }
-
-                        }}>
-                            <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                <Counter field="teleMissCoralCount" label="Missed coral:" type="coral-miss"></Counter>
 
                 <View style={styles.algaeContainer}>
 
 
                     <View style={styles.netContainer}>
-                        <View style={styles.algaeOperation}>
-                            <View style={styles.horizontalContainer}>
-                                <Text style={styles.algaeOperationLabel}>Made net:</Text>
-                                <Text style={styles.reefOperationCount}>{teleNetCount}</Text>
-                            </View>
-                            <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={async () => {
-                                    await AsyncStorage.setItem('teleNetCount', teleNetCount + 1);
-                                    setTeleNetCount(teleNetCount + 1);
-                                }}>
-                                    <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={async () => {
-                                    if (teleNetCount > 0) {
-                                        await AsyncStorage.setItem('teleNetCount', teleNetCount - 1);
-                                        setTeleNetCount(teleNetCount - 1)
-                                    }
+                        <Counter field="teleNetCount" label="Made Net:" type="algae-make"></Counter>
 
-                                }}>
-                                    <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-
-
-                        <View style={[styles.algaeOperation, { backgroundColor: '#f5a9a9' }]}>
-                            <View style={styles.horizontalContainer}>
-                                <Text style={styles.algaeOperationLabel}>Missed net:</Text>
-                                <Text style={styles.reefOperationCount}>{teleMissNetCount}</Text>
-                            </View>
-                            <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={async () => {
-                                    await AsyncStorage.setItem('teleMissNetCount', teleMissNetCount + 1);
-                                    setTeleMissNetCount(teleMissNetCount + 1);
-                                }}>
-                                    <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={async () => {
-                                    if (teleMissNetCount > 0) {
-                                        await AsyncStorage.setItem('teleMissNetCount', teleMissNetCount - 1);
-                                        setTeleMissNetCount(teleMissNetCount - 1)
-                                    }
-
-                                }}>
-                                    <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                        <Counter field="teleMissNetCount" label="Missed Net:" type="algae-miss"></Counter>
                     </View>
 
                     <View style={styles.netContainer}>
-                        <View style={styles.algaeOperation}>
-                            <View style={styles.horizontalContainer}>
-                                <Text style={styles.algaeOperationLabel}>Processor:</Text>
-                                <Text style={styles.reefOperationCount}>{teleProcessorCount}</Text>
-                            </View>
-                            <View style={styles.horizontalContainer}>
-                                <TouchableOpacity onPress={async () => {
-                                    await AsyncStorage.setItem('teleProcessorCount', teleProcessorCount + 1);
-                                    setTeleProcessorCount(teleProcessorCount + 1);
-                                }}>
-                                    <Ionicons name={'add-circle-outline'} size={54} color={'darkgreen'} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={async () => {
-                                    if (teleProcessorCount > 0) {
-                                        await AsyncStorage.setItem('teleProcessorCount', teleProcessorCount - 1);
-                                        setTeleProcessorCount(teleProcessorCount - 1)
-                                    }
-
-                                }}>
-                                    <Ionicons name={'remove-circle-outline'} size={54} color={'darkred'} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                    <Counter field="teleProcessorCount" label="Processor:" type="algae-make"></Counter>
 
 
                         <TouchableOpacity style={[styles.algaeOperation, { backgroundColor: 'transparent' }]} onPress={handleAlgaePress}>
@@ -292,26 +83,19 @@ const TeleScreen = () => {
 
                 </View>
 
+
+
                 <Text style={styles.endgameTitle}>Endgame:</Text>
 
-
-                <TouchableOpacity style={[styles.checkbox, selectedClimb == 'No' ? { display: 'flex' } : { display: 'none' }]} onPress={async () => {
-                    await AsyncStorage.setItem('park', !park);
-                    setPark(!park);
-                }}>
-                    <Text style={styles.checkboxText}>Parked:</Text>
-                    <Ionicons name={park ? 'checkmark-circle-outline' : 'close-circle-outline'} size={54} color={park ? 'green' : 'red'} />
-                </TouchableOpacity>
+                <Checkbox field="park" label="Parked:" ></Checkbox>
 
                 <View style={[styles.horizontalContainer, { width: '90%', marginBottom: 25, }]}>
                     <Text style={styles.label}>Climbed:</Text>
                     <Picker
                         style={styles.input}
-                        selectedValue={selectedClimb}
-                        onValueChange={async (itemValue, itemIndex) => {
-                            await AsyncStorage.setItem('selectedClimb', itemValue);
-                            setSelectedClimb(itemValue);
-                        }
+                        selectedValue={state.selectedClimb}
+                        onValueChange={(value) =>
+                            dispatch({ type: 'UPDATE_FIELD', field: 'selectedClimb', value })
                         }>
                         <Picker.Item label="No" value="No" />
                         <Picker.Item label="Shallow ;)" value="Shallow" />

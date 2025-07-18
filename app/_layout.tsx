@@ -7,7 +7,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 function CustomBackButton() {
   const navigation = useNavigation();
   return (
-    <TouchableOpacity onPress={() => router.push("./")}>
+    <TouchableOpacity onPress={() => router.push("/")}>
       <Ionicons name="chevron-back-circle-outline" size={30} color="white" style={{marginLeft: 20}} />
     </TouchableOpacity>
   );

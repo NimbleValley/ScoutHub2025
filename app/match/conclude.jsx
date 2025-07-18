@@ -1,64 +1,44 @@
-import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-const ConcludeScreen = () => {
+import { doc, setDoc } from 'firebase/firestore';
+import { database } from '../firebase';
 
-    const [lostComms, setLostComms] = React.useState(false);
-    const [disabled, setDisabled] = React.useState(false);
+import { useRouter } from 'expo-router';
+
+import { useForm } from '../form';
+import Checkbox from '../util/checkbox';
+
+// inside your component
+const router = useRouter();
+
+const ConcludeScreen = () => {
 
     const [driverSkill, setDriverSkill] = React.useState(3);
 
     const [commentText, setCommentText] = React.useState('');
 
-    React.useEffect(() => {
-        const firstLoad = async () => {
-            try {
-                await AsyncStorage.setItem('lostComms', false);
-                await AsyncStorage.setItem('disabled', false);
-                await AsyncStorage.setItem('driverSkill', 3);
-                await AsyncStorage.setItem('commentText', 'No comment :(');
-            } catch (err) {
-                alert('Storage error in auto section. Seek help.');
-            }
-        };
-
-        firstLoad();
-    }, []);
+    const { state, dispatch } = useForm();
 
     return (
         <ScrollView style={styles.scrollView}>
             <View style={styles.pageContainer}>
 
-                <TouchableOpacity style={styles.checkbox} onPress={async () => {
-                    await AsyncStorage.setItem('lostComms', !lostComms);
-                    setLostComms(!lostComms); 
-                    }}>
-                    <Text style={styles.checkboxText}>Lost comms?</Text>
-                    <Ionicons name={lostComms ? 'checkmark-circle-outline' : 'close-circle-outline'} size={54} color={lostComms ? 'green' : 'red'} />
-                </TouchableOpacity>
+                <Checkbox field="lostComms" label="Lost comms?"></Checkbox>
 
-                <TouchableOpacity style={styles.checkbox} onPress={async () => {
-                    await AsyncStorage.setItem('disabled', !disabled);
-                    setDisabled(!disabled); 
-                    }}>
-                    <Text style={styles.checkboxText}>Disabled/broke down?</Text>
-                    <Ionicons name={disabled ? 'checkmark-circle-outline' : 'close-circle-outline'} size={54} color={disabled ? 'green' : 'red'} />
-                </TouchableOpacity>
+                <Checkbox field="disabled" label="Disabled/broke down?"></Checkbox>
 
                 <View style={[styles.horizontalContainer, { width: '90%', marginTop: 15, }]}>
                     <Text style={styles.label}>Driver rating:</Text>
                     <Picker
                         style={styles.input}
-                        selectedValue={driverSkill}
-                        onValueChange={async (itemValue, itemIndex) => {
-                            setDriverSkill(itemValue);
-                            await AsyncStorage.setItem('driverSkill', itemValue);
-                        }}>
+                        selectedValue={state.driverSkill}
+                        onValueChange={(value) =>
+                            dispatch({ type: 'UPDATE_FIELD', field: 'driverSkill', value })
+                        }>
                         <Picker.Item label='Excellent' value='5' />
-                        <Picker.Item label='Good' value='3' />
+                        <Picker.Item label='Good' value='4' />
                         <Picker.Item label='Alright' value='3' />
                         <Picker.Item label='Clunky' value='2' />
                         <Picker.Item label='Awful' value='1' />
@@ -69,11 +49,10 @@ const ConcludeScreen = () => {
                     <Text style={styles.commentLabel}>Final Comments:</Text>
                     <TextInput
                         style={styles.commentInput}
-                        onChangeText={async (text) => {
-                            setCommentText(text);
-                            await AsyncStorage.setItem('commentText', text);
-                        }}
-                        value={commentText}
+                        onChangeText={(text) =>
+                            dispatch({ type: 'UPDATE_FIELD', field: 'commentText', value: text })
+                        }
+                        value={state.commentText}
                         placeholderTextColor='grey'
                         placeholder='Please write a useful comment for alliance considerations, not just `slow at L2 good climb.`'
                         multiline={true}
@@ -82,7 +61,7 @@ const ConcludeScreen = () => {
                 </View>
 
                 <TouchableOpacity style={styles.submitButton}
-                    onPress={submitForm}
+                    onPress={() => submitForm(state, dispatch)}
                 >
                     <Text style={styles.buttonText}>Submit Form</Text>
                 </TouchableOpacity>
@@ -92,50 +71,71 @@ const ConcludeScreen = () => {
     );
 }
 
-const submitForm = async () => {
+async function submitForm(state, dispatch) {
     console.log('Submitting form...');
 
-    const generalInformation = {
-        name: await AsyncStorage.getItem('nameText'),
-        matchNumber: await AsyncStorage.getItem('matchNumber'),
-        teamNumber: await AsyncStorage.getItem('teamNumber'),
-        selectedStation: await AsyncStorage.getItem('selectedStation'),
-    }
+    try {
+        const teamMissing = !state.teamNumber?.trim();
+        const matchMissing = !state.matchNumber?.trim();
+        const commentMissing = !state.commentText?.trim();
 
-    const autoInformation = {
-        selectedStartPosition: await AsyncStorage.getItem('selectedStartPosition'),
-        autoL4Count: await AsyncStorage.getItem('autoL4Count'),
-        autoL3Count: await AsyncStorage.getItem('autoL3Count'),
-        autoL2Count: await AsyncStorage.getItem('autoL2Count'),
-        autoL1Count: await AsyncStorage.getItem('autoL1Count'),
-        autoMissCoralCount: await AsyncStorage.getItem('autoMissCoralCount'),
-        autoNetCount: await AsyncStorage.getItem('autoNetCount'),
-        autoMissNetCount: await AsyncStorage.getItem('autoMissNetCount'),
-        autoProcessorCount: await AsyncStorage.getItem('autoProcessorCount'),
-        leave: await AsyncStorage.getItem('leave'),
-    }
+        const autoPointsCount = (parseInt(state.autoL4Count) * 7) + (parseInt(state.autoL3Count) * 6) + (parseInt(state.autoL2Count) * 4) + (parseInt(state.autoL1Count) * 3) + (parseInt(state.autoNetCount) * 4) + (parseInt(state.autoProcessorCount) * 3) + (state.leave ? 3 : 0);
+        const telePointsCount = (parseInt(state.teleL4Count) * 5) + (parseInt(state.teleL3Count) * 4) + (parseInt(state.teleL2Count) * 3) + (parseInt(state.teleL1Count) * 2) + (parseInt(state.teleNetCount) * 4) + (parseInt(state.teleProcessorCount) * 3);
 
-    const teleInformation = {
-        teleL4Count: await AsyncStorage.getItem('teleL4Count'),
-        teleL3Count: await AsyncStorage.getItem('teleL3Count'),
-        teleL2Count: await AsyncStorage.getItem('teleL2Count'),
-        teleL1Count: await AsyncStorage.getItem('teleL1Count'),
-        teleMissCoralCount: await AsyncStorage.getItem('teleMissCoralCount'),
-        teleNetCount: await AsyncStorage.getItem('teleNetCount'),
-        teleMissNetCount: await AsyncStorage.getItem('teleMissNetCount'),
-        teleProcessorCount: await AsyncStorage.getItem('teleProcessorCount'),
-        park: await AsyncStorage.getItem('park'),
-        selectedClimb: await AsyncStorage.getItem('selectedClimb'),
-    }
+        var endgamePointsCount = 0;
+        if (state.selectedClimb == 'No') {
+            endgamePointsCount = state.park ? 2 : 0;
+        } else {
+            endgamePointsCount = state.selectedClimb == 'Deep' ? 12 : 6;
+        }
 
-    const concludingInformation = {
-        lostComms: await AsyncStorage.getItem('lostComms'),
-        disabled: await AsyncStorage.getItem('disabled'),
-        driverSkill: await AsyncStorage.getItem('driverSkill'),
-        commentText: await AsyncStorage.getItem('commentText'),
-    }
+        const totalPointsCount = autoPointsCount + telePointsCount + endgamePointsCount;
 
-    
+        const autoCoralCount = parseInt(state.autoL4Count) + parseInt(state.autoL3Count) + parseInt(state.autoL2Count) + parseInt(state.autoL1Count);
+        const teleCoralCount = parseInt(state.teleL4Count) + parseInt(state.teleL3Count) + parseInt(state.teleL2Count) + parseInt(state.teleL1Count);
+        const totalCoralCount = autoCoralCount + teleCoralCount;
+        const totalAlgaeCount = parseInt(state.autoNetCount) + parseInt(state.autoProcessorCount) + parseInt(state.teleNetCount) + parseInt(state.teleProcessorCount);
+        const totalGamepiecesCount = totalCoralCount + totalAlgaeCount;
+
+        // Submit to Firestore
+        await setDoc(doc(database, 'scoutingForms', `match${state.matchNumber}_team${state.teamNumber}`), {
+            ...state,
+            teamNumber: teamMissing ? -1 : state.teamNumber,
+            matchNumber: matchMissing ? -1 : state.matchNumber,
+            commentText: commentMissing ? `${state.nameText} didn't write a comment :(` : state.commentText,
+            park: state.selectedClimb == 'No' ? state.park : false,
+            timestamp: new Date(),
+            autoPoints: autoPointsCount,
+            telePoints: telePointsCount,
+            endgamePoints: endgamePointsCount,
+            totalPoints: totalPointsCount,
+            autoCoral: autoCoralCount,
+            teleCoral: teleCoralCount,
+            totalCoral: totalCoralCount,
+            totalAlgae: totalAlgaeCount,
+            totalGamepieces: totalGamepiecesCount
+        });
+
+        alert('Data submitted successfully! A new form will begin now.');
+
+        const savedName = state.nameText;
+        const savedStation = state.selectedStation;
+        const currentMatch = parseInt(state.matchNumber) || 0;
+
+        dispatch({ type: 'RESET_FORM' });
+        dispatch({ type: 'UPDATE_FIELD', field: 'nameText', value: savedName });
+        dispatch({ type: 'UPDATE_FIELD', field: 'selectedStation', value: savedStation });
+        dispatch({
+            type: 'UPDATE_FIELD',
+            field: 'matchNumber',
+            value: (currentMatch + 1).toString(),
+        });
+
+        router.replace('./');
+    } catch (error) {
+        console.error('Error submitting data: ', error);
+        alert(error);
+    }
 }
 
 const styles = StyleSheet.create({
