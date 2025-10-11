@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
-import { FormProvider } from '../form';
+import { FormProvider } from '../util/match-form';
 
 const MatchLayout = () => {
   return (
@@ -41,6 +41,17 @@ const MatchLayout = () => {
           options={{
             title: 'Conclude',
             headerShown: false,
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons name={focused ? 'cloud-upload' : 'cloud-upload-outline'} size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="match-form"
+          options={{
+            title: 'DONT CLICK',
+            headerShown: false,
+            tabBarButton: () => null,
             tabBarIcon: ({ color, size, focused }) => (
               <Ionicons name={focused ? 'cloud-upload' : 'cloud-upload-outline'} size={size} color={color} />
             ),

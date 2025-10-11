@@ -1,14 +1,14 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { Stack, router } from "expo-router";
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
 function CustomBackButton() {
   const navigation = useNavigation();
   return (
     <TouchableOpacity onPress={() => router.push("/")}>
-      <Ionicons name="chevron-back-circle-outline" size={30} color="white" style={{marginLeft: 20}} />
+      <Ionicons name="chevron-back-circle-outline" size={30} color="white" style={{ marginLeft: 20 }} />
     </TouchableOpacity>
   );
 }
@@ -33,13 +33,25 @@ export default function RootLayout() {
   >
 
     <Stack.Screen name='index' options={{
-      title: 'Hexhound Offseason Scouting',
+      title: 'Hexhound Scouting Application',
       animation: 'slide_from_right',
       headerLeft: () => null
     }} />
 
     <Stack.Screen name='match' options={{
       title: 'Match Scouting',
+      animation: 'slide_from_right',
+      headerLeft: () => <CustomBackButton />,
+    }} />
+
+    <Stack.Screen name='pit' options={{
+      title: 'Pit Scouting',
+      animation: 'slide_from_right',
+      headerLeft: () => <CustomBackButton />,
+    }} />
+
+    <Stack.Screen name='admin' options={{
+      title: 'Admin Page',
       animation: 'slide_from_right',
       headerLeft: () => <CustomBackButton />,
     }} />

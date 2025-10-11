@@ -1,7 +1,6 @@
-import React from 'react';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useForm } from '../form';
+import { useForm } from './match-form';
 
 export default function Counter({ field, label, type = 'make' }) {
     const { state, dispatch } = useForm();
