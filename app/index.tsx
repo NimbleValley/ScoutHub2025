@@ -34,13 +34,13 @@ const HomeScreen = () => {
         <TouchableOpacity style={styles.pitButton}
           onPress={() => router.push('/pit')}
         >
-          <Text style={styles.buttonText}>Pit Scout</Text>
+          <Text style={styles.buttonText}>PPP Scout</Text>
         </TouchableOpacity>
 
         <View style={styles.smallButtonContainer}>
 
           <TouchableOpacity style={styles.smallAnalysisButton}
-            onPress={() => handlePress('https://nimblevalley.github.io/Scouting2025')}
+            onPress={() => handlePress('https://nimblevalley.github.io/ScoutingOffseason2025/')}
           >
             <Ionicons name={'analytics-outline'} size={40} color={'white'} />
           </TouchableOpacity>
@@ -53,7 +53,7 @@ const HomeScreen = () => {
 
         </View>
 
-        <Text style={styles.footer}>Comp: Mukwonago, Version: 1.2</Text>
+        <Text style={styles.footer}>Comp: Tremont, Version: 1.3</Text>
       </View>
     </ScrollView>
   );
@@ -155,6 +155,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     marginTop: 25,
+    marginBottom: 25,
   },
 });
 

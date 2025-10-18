@@ -1,8 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { doc, setDoc } from 'firebase/firestore';
 import { useEffect } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { database } from '../firebase';
+import { supabase } from '../supabase';
 import { usePitForm } from './pit-detail-form';
 
 const router = useRouter();
@@ -12,7 +11,7 @@ export default function PitDetail() {
   const { state, dispatch } = usePitForm();
 
   useEffect(() => {
-    dispatch({ type: 'UPDATE_FIELD', field: 'teamNumber', value: team });
+    dispatch({ type: 'UPDATE_FIELD', field: 'team_number', value: parseInt(String(team)) });
   }, []);
 
   return (
@@ -23,15 +22,15 @@ export default function PitDetail() {
         <View style={styles.scrollViewContainer}>
 
           <View style={styles.verticalContainer}>
-            <Text style={styles.textInputLabel}>Have they made any recent mechanical/programming changes?</Text>
+            <Text style={styles.textInputLabel}>Describe all autonomous modes the team has. Ask about consistency.</Text>
             <TextInput
               style={styles.textInput}
               placeholderTextColor='grey'
-              placeholder='Describe any changes made, leave blank if none'
+              placeholder='Write about auto here'
               multiline={true}
               numberOfLines={3}
               onChangeText={(text) =>
-                dispatch({ type: 'UPDATE_FIELD', field: 'recentChanges', value: text })
+                dispatch({ type: 'UPDATE_FIELD', field: 'auto_description', value: text })
               }
             />
           </View>
@@ -45,7 +44,7 @@ export default function PitDetail() {
               multiline={true}
               numberOfLines={3}
               onChangeText={(text) =>
-                dispatch({ type: 'UPDATE_FIELD', field: 'driverExperience', value: text })
+                dispatch({ type: 'UPDATE_FIELD', field: 'driver_experience', value: text })
               }
             />
           </View>
@@ -59,7 +58,7 @@ export default function PitDetail() {
               multiline={true}
               numberOfLines={3}
               onChangeText={(text) =>
-                dispatch({ type: 'UPDATE_FIELD', field: 'climbDetails', value: text })
+                dispatch({ type: 'UPDATE_FIELD', field: 'endgame_description', value: text })
               }
             />
           </View>
@@ -73,7 +72,21 @@ export default function PitDetail() {
               multiline={true}
               numberOfLines={3}
               onChangeText={(text) =>
-                dispatch({ type: 'UPDATE_FIELD', field: 'algaeDetails', value: text })
+                dispatch({ type: 'UPDATE_FIELD', field: 'algae_description', value: text })
+              }
+            />
+          </View>
+
+          <View style={styles.verticalContainer}>
+            <Text style={styles.textInputLabel}>Any final words about the team?</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholderTextColor='grey'
+              placeholder='Put final comments here if you have anything else to say.'
+              multiline={true}
+              numberOfLines={3}
+              onChangeText={(text) =>
+                dispatch({ type: 'UPDATE_FIELD', field: 'comments', value: text })
               }
             />
           </View>
@@ -96,16 +109,19 @@ async function submitForm(state, dispatch) {
 
   try {
     // Submit to Firestore
-    await setDoc(doc(database, 'pitScout', `pitScout_team${state.teamNumber}`), {
-      ...state
-    });
+    const { error } = await supabase.from('Pit Scouting').insert(
+      state
+    );
 
-    alert('Data submitted successfully! A new form will begin now.');
+    if (error) {
+      alert('ERROR SUBMITTING: ' + error.message);
+    } else {
+      alert('Data submitted successfully! A new form will begin now.');
 
+      dispatch({ type: 'RESET_FORM' });
 
-    dispatch({ type: 'RESET_FORM' });
-
-    router.replace('./');
+      router.replace('./');
+    }
   } catch (error) {
     console.error('Error submitting data: ', error);
     alert(error);

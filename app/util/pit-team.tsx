@@ -7,14 +7,14 @@ export default function PitTeam({ number, pre, pit, image }:{number:number, pre:
 
     const router = useRouter();
 
-    const hasPreScouting = false;
+    const hasPreScouting = true;
 
     return (
         <View style={styles.container}>
             <Text style={styles.teamText}>{number}</Text>
 
             <TouchableOpacity>
-                <Text style={[styles.statusText, { backgroundColor: pre ? '#808080' : '#fc566c' }]} onPress={() => { if (!hasPreScouting) alert('No pre-scouting for this event.') }}>Pre</Text>
+                <Text style={[styles.statusText, { backgroundColor: pre ? '#808080' : '#fc566c' }]} onPress={() => { if (!hasPreScouting) alert('No pre-scouting for this event.'); else router.push({ pathname: `../pit/pre`, params: { team: number } }); }}>Pre</Text>
             </TouchableOpacity>
 
             <TouchableOpacity>

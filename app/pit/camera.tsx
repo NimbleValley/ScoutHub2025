@@ -3,7 +3,9 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { doc, setDoc } from 'firebase/firestore';
 import { useRef, useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { EVENT_KEY } from '../EVENT_KEY';
 import { database } from '../firebase';
+import { supabase } from '../supabase';
 
 const router = useRouter();
 
@@ -15,7 +17,7 @@ const ImageUploadScreen = () => {
   const [permission, requestPermission] = useCameraPermissions();
   const [isPreview, setIsPreview] = useState(false);
 
-  const cameraRef = useRef();
+  const cameraRef = useRef<CameraView>();
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -54,7 +56,7 @@ const ImageUploadScreen = () => {
     }
   };
 
-  const uploadPhoto = async (team) => {
+  const uploadPhotoCloudinary = async (team) => {
     if (cameraRef.current) {
       const options = { quality: 0.7, base64: true };
       const data = await cameraRef.current.takePictureAsync(options);
@@ -94,6 +96,51 @@ const ImageUploadScreen = () => {
     }
   };
 
+  async function uploadPhoto(team: number) {
+    try {
+      const options = { quality: 0.7, base64: true };
+      const imageData = await cameraRef.current.takePictureAsync(options);
+
+      const filePath = `${EVENT_KEY}/team${team}.jpg`;
+
+      // Clean base64 string (sometimes includes "data:image/jpeg;base64,")
+      const base64Img = imageData.base64.replace(/^data:image\/\w+;base64,/, '');
+
+      // Convert base64 → binary Uint8Array
+      const byteCharacters = atob(base64Img);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('Robot Images')
+        .upload(filePath, byteArray, {
+          contentType: 'image/jpeg',
+          upsert: true,
+        });
+
+      if (error) throw error;
+
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage
+        .from('Robot Images')
+        .getPublicUrl(filePath);
+
+      console.log('✅ Uploaded:', publicUrlData.publicUrl);
+
+      alert('Upload successful!');
+      router.replace('./');
+
+      //return publicUrlData.publicUrl;
+
+    } catch (error) {
+      console.error('❌ Error uploading image:', error);
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.titleText}>Image for team {team}</Text>
@@ -112,7 +159,7 @@ const ImageUploadScreen = () => {
             <TouchableOpacity style={styles.button} onPress={cancelPreview}>
               <Text style={styles.text}>Discard</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => { uploadPhoto(team); }}>
+            <TouchableOpacity style={styles.button} onPress={() => { uploadPhoto(parseInt(String(team))); }}>
               <Text style={styles.text}>Upload</Text>
             </TouchableOpacity>
           </View>)}
@@ -170,7 +217,7 @@ const styles = StyleSheet.create({
   },
   button: {
     alignSelf: 'flex-end',
-    display:'flex',
+    display: 'flex',
     alignItems: 'center',
     borderColor: 'white',
     borderWidth: 4,

@@ -104,6 +104,10 @@ const AdminScreen = () => {
     }
   }
 
+  const transferMatchForms = () => {
+
+  }
+
   if (isLocked) {
     return (
       <View style={styles.pageContainer}>
@@ -114,6 +118,7 @@ const AdminScreen = () => {
             setPasswordText(text)
           }
           placeholderTextColor='grey'
+          secureTextEntry={true}
         />
         <TouchableOpacity style={styles.submitButton}
           onPress={() => checkPassword(passwordText)}>
@@ -129,8 +134,8 @@ const AdminScreen = () => {
       <View style={styles.pageContainer}>
         <Text style={styles.titleText}>Admin Links & Actions</Text>
 
-        <TouchableOpacity style={styles.safeButton} onPress={downloadMatchData}>
-          <Text style={styles.buttonText}>Download Match Data</Text>
+        <TouchableOpacity style={styles.safeButton} onPress={() => openLink('https://supabase.com/dashboard/project/odzsnrjocdmbajksnzpk/editor/25099?schema=public')}>
+          <Text style={styles.buttonText}>Open Supabase Match Data</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.linkButton} onPress={() => openLink('https://console.firebase.google.com/u/0/project/robotics-3c92c/firestore/databases/-default-/data?fb_gclid=CjwKCAjw1dLDBhBoEiwAQNRiQTtOXBkr8eVc1tyGzvMlPtwAzVMOhxQw42WN_UP762rvm5YmTpmTeBoCjsoQAvD_BwE')}>
@@ -145,9 +150,11 @@ const AdminScreen = () => {
           <Text style={styles.buttonText}>Open Team Spreadsheet</Text>
   </TouchableOpacity>*/}
 
-        <TouchableOpacity style={styles.dangerButton} onPress={resetMatchForms}>
-          <Text style={styles.buttonText}>Reset Match Forms</Text>
+{/*
+        <TouchableOpacity style={styles.dangerButton} onPress={transferMatchForms}>
+          <Text style={styles.buttonText}>Transfer Match Forms</Text>
         </TouchableOpacity>
+        */}
 
         <TouchableOpacity style={styles.dangerButton} onPress={resetPitScoutForms}>
           <Text style={styles.buttonText}>Reset Pit Scout Forms</Text>

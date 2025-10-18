@@ -3,11 +3,10 @@ import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { EVENT_KEY } from '../EVENT_KEY';
-import { FeedbackDatabase } from '../feedbacksupabasetypes';
-import { supabaseStatisticFeedback } from '../supabase';
-import { Database } from '../supabasetypes';
-import { useForm } from '../util/match-form';
+import { EVENT_KEY } from '../../EVENT_KEY';
+import { FeedbackDatabase } from '../../feedbacksupabasetypes';
+import { supabaseStatisticFeedback } from '../../supabase';
+import { useForm } from '../../util/match-form';
 
 const GeneralScreen = () => {
 
@@ -46,11 +45,13 @@ const GeneralScreen = () => {
         getNames();
     }, []);
 
-    const teams = useTeamList(EVENT_KEY);
+    const teams = useTeamList('2025wimc');
 
     return (
         <ScrollView style={styles.scrollView}>
             <View style={styles.pageContainer}>
+
+                <Text style={styles.warningText}>This page is for PRACTICE SCOUTING only!!! DO NOT SCOUT QUALIFICATION OR PRE-SCOUTING MATCHES HERE! To scout those, go to the home page.</Text>
 
                 <View style={styles.horizontalContainer}>
                     <Text style={styles.label}>Scout name:</Text>
@@ -78,32 +79,12 @@ const GeneralScreen = () => {
                 </View>
 
                 <View style={styles.horizontalContainer}>
-                    <Text style={styles.label}>Match #:</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(text) =>
-                            dispatch({ type: 'UPDATE_FIELD', field: 'matchNumber', value: text })
-                        }
-                        value={state.matchNumber}
-                        keyboardType="numeric"
-                        placeholderTextColor='grey'
-                        placeholder='ex. 77'
-                    />
-                </View>
-
-                <View style={styles.horizontalContainer}>
                     <Text style={styles.label}>Team #:</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(text) => {
                             dispatch({ type: 'UPDATE_FIELD', field: 'teamNumber', value: text });
                             setLocalTeamNumber(text);
-                        }
-                        }
-                        onBlur={() => {
-                            if (!teams.includes(parseInt(localTeamNumber))) {
-                                alert(`Team ${localTeamNumber} not found at event, please double check that they exist!!!`);
-                            }
                         }
                         }
                         value={state.teamNumber}
@@ -113,69 +94,7 @@ const GeneralScreen = () => {
                     />
                 </View>
 
-                <View style={styles.horizontalContainer}>
-                    <Text style={styles.label}>Station:</Text>
-                    <Picker
-                        style={styles.input}
-                        selectedValue={state.selectedStation}
-                        onValueChange={(value:Database['public']['Enums']['driverstation']) =>
-                            dispatch({ type: 'UPDATE_FIELD', field: 'selectedStation', value })
-                        }>
-                        <Picker.Item label="B1" value="B1" />
-                        <Picker.Item label="B2" value="B2" />
-                        <Picker.Item label="B3" value="B3" />
-                        <Picker.Item label="R1" value="R1" />
-                        <Picker.Item label="R2" value="R2" />
-                        <Picker.Item label="R3" value="R3" />
-                    </Picker>
-                </View>
-
-                <Text style={styles.teamNumberWarning}>Please check the team number! An incorrect team leads to BAD DATA and WASTES YOUR TIME!</Text>
-
-                <Text style={styles.wagerInfo}>Match predictions are for fun and have no meaning other than friendly competition.</Text>
-                <View style={styles.wagerContainer}>
-
-                    <View style={styles.horizontalContainer}>
-                        <Text style={styles.label}>Winning alliance:</Text>
-                        <Picker
-                            style={[styles.input, { color: predictedAlliance, }]}
-                            selectedValue={predictedAlliance}
-                            onValueChange={async (value) => {
-                                setPredictedAlliance(value);
-                                try {
-                                    await AsyncStorage.setItem('predictedAlliance', value);
-                                } catch (e) {
-                                    console.error('Failed to save predictedAlliance', e);
-                                }
-                            }}
-                        >
-                            <Picker.Item label="Red" value="red" />
-                            <Picker.Item label="Blue" value="blue" />
-                        </Picker>
-                    </View>
-
-                    <View style={styles.horizontalContainer}>
-                        <Text style={styles.label}>Wager:</Text>
-                        <Picker
-                            style={styles.input}
-                            selectedValue={wagerAmount}
-                            onValueChange={async (itemValue) => {
-                                setWagerAmount(itemValue);
-                                try {
-                                    await AsyncStorage.setItem('wagerAmount', itemValue.toString());
-                                } catch (e) {
-                                    console.error('Failed to save wagerAmount to storage', e);
-                                }
-                            }}>
-                            <Picker.Item label="$5" value="5" />
-                            <Picker.Item label="$4" value="4" />
-                            <Picker.Item label="$3" value="3" />
-                            <Picker.Item label="$2" value="2" />
-                            <Picker.Item label="$1" value="1" />
-                        </Picker>
-                    </View>
-
-                </View>
+                <Text style={styles.warningText}>Please check the team number! It is impossible to check team numbers in practice scouting, please be careful</Text>
 
             </View>
         </ScrollView>
@@ -251,20 +170,14 @@ const styles = StyleSheet.create({
         textAlign: 'right',
         fontWeight: 'bold',
     },
-    teamNumberWarning: {
+    warningText: {
         fontSize: 20,
         width: '90%',
         textAlign: 'center',
-        color: 'red',
-        marginTop: 35,
-    },
-    wagerInfo: {
-        fontSize: 12,
-        width: '90%',
-        textAlign: 'center',
-        color: 'teal',
-        fontWeight: 'bold',
-        marginTop: 35,
+        color: 'white',
+        marginVertical: 15,
+        backgroundColor: 'red',
+        padding: 10,
     },
     wagerContainer: {
         display: 'flex',
