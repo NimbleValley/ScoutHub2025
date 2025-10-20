@@ -1,18 +1,16 @@
 import { useRouter } from 'expo-router';
-import { collection, getDocs } from 'firebase/firestore';
 import React, { useState } from 'react';
 import { Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { EVENT_KEY } from '../EVENT_KEY';
-import { database } from '../firebase';
+import { supabase } from '../supabase';
 import PitTeam from '../util/pit-team';
 
 const HomeScreen = () => {
 
-
   const teams = useTeamList(EVENT_KEY);
   const pitScoutedTeams = usePitScoutedTeams();
   const teamsWithImages = useTeamsWithImages();
-  console.log(pitScoutedTeams);
+  console.log(teamsWithImages);
 
   const [manualTeamNumber, setManualTeamNumber] = useState<number>(9999);
   const [showManual, setShowManual] = useState<boolean>(false);
@@ -37,13 +35,13 @@ const HomeScreen = () => {
           </TouchableOpacity>
 
           {showManual &&
-            <View style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <View style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Text style={[styles.normalText, { marginBottom: 0, }]}>Set team # and manually scout:</Text>
               <TextInput keyboardType="number-pad" style={styles.input} onChangeText={(text) =>
                 setManualTeamNumber(parseInt(text))
               }
                 placeholderTextColor='grey'></TextInput>
-              <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
+              <View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
                 <PitTeam
                   key={manualTeamNumber}
                   number={(manualTeamNumber)}
@@ -82,11 +80,11 @@ function usePitScoutedTeams() {
   React.useEffect(() => {
     async function fetchPitScoutedTeams() {
       try {
-        const querySnapshot = await getDocs(collection(database, 'pitScout'));
-        const teamList = querySnapshot.docs
-          .map(doc => parseInt(doc.data().teamNumber, 10))
-          .filter(n => !isNaN(n))
-        setTeams(teamList);
+        const {data, error} = await supabase.from('Pit Scouting').select('*');
+        const scouted = data?.map((p) => p.team_number) ?? [];
+        console.log(scouted)
+
+        setTeams(scouted);
       } catch (error) {
         console.error('Error fetching pitScout teams:', error);
       }
@@ -104,11 +102,13 @@ function useTeamsWithImages() {
   React.useEffect(() => {
     async function fetchPitScoutedTeams() {
       try {
-        const querySnapshot = await getDocs(collection(database, 'robotImages'));
-        const teamList = querySnapshot.docs
-          .map(doc => parseInt(doc.data().teamNumber, 10))
-          .filter(n => !isNaN(n))
-        setTeams(teamList);
+        const { data, error } = await supabase.storage
+          .from('robot-images')
+          .list(EVENT_KEY);
+
+          const results = data.map((t) => parseInt(t.name.replace('team', '')));
+
+          setTeams(results);
       } catch (error) {
         console.error('Error fetching images of teams:', error);
       }
@@ -197,7 +197,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     width: '50%',
-    height: 50,
     marginTop: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -208,6 +207,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   titleText: {
     fontSize: 35,

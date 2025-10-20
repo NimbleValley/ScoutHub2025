@@ -101,7 +101,7 @@ const ImageUploadScreen = () => {
       const options = { quality: 0.7, base64: true };
       const imageData = await cameraRef.current.takePictureAsync(options);
 
-      const filePath = `${EVENT_KEY}/team${team}.jpg`;
+      const filePath = `${EVENT_KEY}/team${team}`;
 
       // Clean base64 string (sometimes includes "data:image/jpeg;base64,")
       const base64Img = imageData.base64.replace(/^data:image\/\w+;base64,/, '');
@@ -116,7 +116,7 @@ const ImageUploadScreen = () => {
 
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage
-        .from('Robot Images')
+        .from('robot-images')
         .upload(filePath, byteArray, {
           contentType: 'image/jpeg',
           upsert: true,
@@ -126,10 +126,8 @@ const ImageUploadScreen = () => {
 
       // Get public URL
       const { data: publicUrlData } = supabase.storage
-        .from('Robot Images')
+        .from('robot-images')
         .getPublicUrl(filePath);
-
-      console.log('✅ Uploaded:', publicUrlData.publicUrl);
 
       alert('Upload successful!');
       router.replace('./');
@@ -137,7 +135,7 @@ const ImageUploadScreen = () => {
       //return publicUrlData.publicUrl;
 
     } catch (error) {
-      console.error('❌ Error uploading image:', error);
+      alert('ERROR: ' + error);
     }
   }
 
